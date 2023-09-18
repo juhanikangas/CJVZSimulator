@@ -30,7 +30,7 @@ def choose_plane():
             if chosen_plane_index == "info":
                 show_full_plane_status = not show_full_plane_status
             elif chosen_plane_index == 'back':
-                print('')
+                return False
             else:
                 print("Invalid option")
     return user_plane
