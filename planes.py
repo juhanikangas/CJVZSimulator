@@ -16,6 +16,6 @@ class Plane:
 def plane_options():
     plane1 = Plane("Boeing 747", "Queen of the skies", 178000, 900, 200)
     plane2 = Plane("Lockheed SR-71", "Blackbird", 30617, 3529, 50)
-    plane3 = Plane("Cessna 172", "Skyhawk", 767, 196, 500)
+    plane3 = Plane("Cessna 172", "Skyhawk", 767, 196, 150)
     plane4 = Plane("Concorde", "Concorde", 78700, 2180, 100)
     return [plane1, plane2, plane3, plane4]

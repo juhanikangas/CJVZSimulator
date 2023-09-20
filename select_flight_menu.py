@@ -1,20 +1,23 @@
 import mysql.connector as mc
 from colorama import Fore, Back, Style
+import geopy.distance
 
 connection = mc.connect(
-         host='127.0.0.1',
-         port= 3306,
-         database='flight_game',
-         user='luukas',
-         password='s87lk#4Mi1a',
-         autocommit=True
-        )
+    host='127.0.0.1',
+    port=3306,
+    database='flight_game',
+    user='luukas',
+    password='s87lk#4Mi1a',
+    autocommit=True
+)
 cursor = connection.cursor()
+return_code = "BACK"
 
 def select_continent():
     query = f"SELECT DISTINCT continent FROM airport"
     cursor.execute(query)
     results = cursor.fetchall()
+
     continent_codes = [row[0] for row in results]
 
     continents = [
@@ -36,7 +39,7 @@ def select_continent():
 
         if selected_continent in continent_codes:
             return [2, selected_continent]
-        elif selected_continent == "back":
+        elif selected_continent == return_code:
             return [0, False]
         else:
             print("Invalid continent")
@@ -63,7 +66,7 @@ def select_country(continent):
 
         if selected_country in country_codes:
             return [3, selected_country]
-        elif selected_country == "back":
+        elif selected_country == return_code:
             return [1, False]
         else:
             print("Invalid country")
@@ -85,7 +88,7 @@ def select_airport(country):
 
         if selected_airport in airport_idents:
             return [1, selected_airport]
-        elif selected_airport == "BACK":
+        elif selected_airport == return_code:
             return [2, False]
         else:
             print("Invalid airport")
@@ -115,19 +118,17 @@ def choose_airport():
 
     return airport
 
-def choose_flight():
-    departure_airport = {}
-    destination_airport = {}
+
+def choose_flight(flight_specs):
     while True:
         print(Fore.RED + "[BACK] " + Fore.RESET + "Go back")
-
-        if bool(departure_airport):
-            print(f"[1] Departure airport: {departure_airport['name']}")
+        if "departure_airport_name" in flight_specs:
+            print(f"[1] Departure airport: {flight_specs['departure_airport_name']}")
         else:
             print("[1] Departure airport:")
 
-        if bool(destination_airport):
-            print(f"[2] Destination airport: {destination_airport['name']}")
+        if "destination_airport_name" in flight_specs:
+            print(f"[2] Destination airport: {flight_specs['destination_airport_name']}")
         else:
             print("[2] Destination airport:")
 
@@ -135,24 +136,39 @@ def choose_flight():
 
         if selected_airport == "1":
             departure_airport_ident = choose_airport()
-            query = f"SELECT name FROM airport WHERE ident='{departure_airport_ident}'"
-            cursor.execute(query)
-            results = []
-            for i in cursor.fetchall():
-                results.extend(i)
-            departure_airport["name"] = results[0]
+            departure_airport_name = get_airport_name(departure_airport_ident)
+            flight_specs["departure_airport_name"] = departure_airport_name
         elif selected_airport == "2":
             destination_airport_ident = choose_airport()
-            query = f"SELECT name FROM airport WHERE ident='{destination_airport_ident}'"
-            cursor.execute(query)
-            results = []
-            for i in cursor.fetchall():
-                results.extend(i)
-            destination_airport["name"] = results[0]
-        elif selected_airport == "BACK":
-            if bool(departure_airport) and bool(destination_airport):
-                return f"{departure_airport['name']} to {destination_airport['name']}"
-            else:
-                return ""
+            destination_airport_name = get_airport_name(destination_airport_ident)
+            flight_specs["destination_airport_name"] = destination_airport_name
+        elif selected_airport == return_code:
+            if "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs and "distance_km" not in flight_specs:
+                flight_specs["distance_km"] = get_distance(departure_airport_ident, destination_airport_ident)
+            return flight_specs
         else:
             print("Invalid input")
+
+def get_airport_name(airport_ident):
+    query = f"SELECT name FROM airport WHERE ident='{airport_ident}'"
+    cursor.execute(query)
+    results = []
+    for i in cursor.fetchall():
+        results.extend(i)
+    return results[0]
+
+
+def get_coords(airport_ident):
+    sql = f"SELECT latitude_deg, longitude_deg FROM airport where ident='{airport_ident}'"
+
+    cursor.execute(sql)
+    coords = cursor.fetchone()
+
+    return coords
+
+def get_distance(departure_airport_ident, destination_airport_ident):
+    coords1 = get_coords(departure_airport_ident)
+    coords2 = get_coords(destination_airport_ident)
+
+    distance_km = round(geopy.distance.geodesic(coords1, coords2).km)
+    return distance_km

@@ -1,7 +1,8 @@
 from main_menu import main_menu
 
 def main():
-    main_menu()
+    flight_specs = {}
+    main_menu(flight_specs)
 
 
 if __name__ == '__main__':

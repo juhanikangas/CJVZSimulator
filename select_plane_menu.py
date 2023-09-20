@@ -3,7 +3,7 @@ from colorama import Fore, Back, Style
 
 
 # Shows the options for planes and asks what plane the user wants to use
-def choose_plane():
+def choose_plane(flight_specs):
     user_plane = False
     planes = plane_options()
     show_full_plane_status = False
@@ -33,4 +33,5 @@ def choose_plane():
                 return False
             else:
                 print("Invalid option")
-    return user_plane
+    flight_specs["user_plane"] = user_plane
+    return flight_specs
