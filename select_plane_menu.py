@@ -1,5 +1,6 @@
 from planes import plane_options
 from colorama import Fore, Back, Style
+import os
 
 
 # Shows the options for planes and asks what plane the user wants to use
@@ -30,8 +31,9 @@ def choose_plane(flight_specs):
             if chosen_plane_index == "info":
                 show_full_plane_status = not show_full_plane_status
             elif chosen_plane_index == 'back':
-                return False
+                return flight_specs
             else:
                 print("Invalid option")
+    os.system('cls')
     flight_specs["user_plane"] = user_plane
     return flight_specs

@@ -1,15 +1,16 @@
+import os
+
 from colorama import Fore, Back, Style
 
 from select_plane_menu import choose_plane
 from select_flight_menu import choose_flight
 
 def main_menu(flight_specs):
-    while True:
+    while flight_specs["menu"] == 0:
         plane_selected = bool("user_plane" in flight_specs)
         flight_selected = bool("departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs)
         plane_and_flight_selected = bool("user_plane" in flight_specs and "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs)
         print("Main Menu")
-
         if plane_selected:
             print(Fore.GREEN + "[1] " + Fore.RESET + "Change airplane")
         else:
@@ -32,8 +33,11 @@ def main_menu(flight_specs):
         elif action == "3":
             if plane_and_flight_selected:
                 print("Game started")
-                break
+                return flight_specs
             else:
+                os.system('cls')
                 print("Invalid input")
         else:
+            os.system('cls')
             print("Invalid input")
+
