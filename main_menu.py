@@ -44,6 +44,7 @@ def calculate_flight_duration(flight_specs):
 
 
 def main_menu(flight_specs):
+    input_is_invalid = False
     os.system('cls' if os.name == 'nt' else 'clear')
     while flight_specs["menu"] == 0:
         plane_selected = bool("user_plane" in flight_specs)
@@ -63,22 +64,21 @@ def main_menu(flight_specs):
         if plane_and_flight_selected:
             flight_specs["flight_duration"] = calculate_flight_duration(flight_specs)
             print(Fore.GREEN + "[3] " + Fore.RESET + "Start game " + "(Flight duration: " + str(flight_specs["flight_duration"]) + ")")
+        if input_is_invalid:
+            print(Fore.RED + "Invalid input" + Fore.RESET)
 
-        action = input("Select: ")
+        selected_option = input("Select: ")
 
-        if action == "1":
+        if selected_option == "1":
             flight_specs = choose_plane(flight_specs)
-        elif action == "2":
+        elif selected_option == "2":
             flight_specs = choose_flight(flight_specs)
-        elif action == "3":
+        elif selected_option == "3" and plane_and_flight_selected:
             if plane_and_flight_selected:
                 # start_flight()
                 return flight_specs
-            else:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print("Invalid input")
         else:
             os.system('cls' if os.name == 'nt' else 'clear')
-            print("Invalid input")
+            input_is_invalid = True
 
 

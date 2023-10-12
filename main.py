@@ -4,7 +4,8 @@ from end_screen import end_screen
 
 flight_specs = {
         "menu": 0,
-        "player_exp": 0
+        "player_exp": 0,
+        "flight_successful": False
     }
 
 def main():

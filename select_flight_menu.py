@@ -171,6 +171,7 @@ def choose_airport(flight_specs):
 
 
 def choose_flight(flight_specs):
+    input_is_invalid = False
     os.system('cls' if os.name == 'nt' else 'clear')
     while flight_specs["menu"] == 0:
         print(Fore.RED + "[BACK] " + Fore.RESET + "Go back")
@@ -183,7 +184,8 @@ def choose_flight(flight_specs):
             print(Fore.GREEN + "[2] " + Fore.RESET + "Destination airport: " + flight_specs['destination_airport_name'])
         else:
             print(Fore.GREEN + "[2] " + Fore.RESET + "Destination airport:")
-
+        if input_is_invalid:
+            print(Fore.RED + "Invalid input" + Fore.RESET)
         selected_airport = input("Select: ").upper()
 
         if selected_airport == "1":
@@ -210,8 +212,9 @@ def choose_flight(flight_specs):
         elif selected_airport == return_code:
             if "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs:
                 flight_specs["distance_km"] = get_distance(flight_specs["departure_airport_ident"],flight_specs["destination_airport_ident"])
-                os.system('cls' if os.name == 'nt' else 'clear')
-                flight_specs["menu"] = 0
-                return flight_specs
+            os.system('cls' if os.name == 'nt' else 'clear')
+            flight_specs["menu"] = 0
+            return flight_specs
         else:
-            input_is_valid = False
+            os.system('cls' if os.name == 'nt' else 'clear')
+            input_is_invalid = True
