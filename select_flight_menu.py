@@ -1,9 +1,11 @@
 import os
+import time
 
 import mysql.connector as mc
 import geopy.distance
-from colorama import Fore, Back, Style
-from termcolor import colored
+from colorama import Fore
+
+from select_menu import select_menu
 
 connection = mc.connect(
     host='127.0.0.1',
@@ -15,6 +17,32 @@ connection = mc.connect(
 )
 cursor = connection.cursor()
 return_code = "BACK"
+
+def get_airport_name(airport_ident):
+    query = f"SELECT name FROM airport WHERE ident='{airport_ident}'"
+    cursor.execute(query)
+    results = []
+    for i in cursor.fetchall():
+        results.extend(i)
+    return results[0]
+
+
+def get_coords(airport_ident):
+    sql = f"SELECT latitude_deg, longitude_deg FROM airport WHERE ident='{airport_ident}'"
+
+    cursor.execute(sql)
+    coords = cursor.fetchone()
+
+    return coords
+
+
+def get_distance(departure_airport_ident, destination_airport_ident):
+    coords1 = get_coords(departure_airport_ident)
+    coords2 = get_coords(destination_airport_ident)
+
+    distance_km = round(geopy.distance.geodesic(coords1, coords2).km)
+    return distance_km
+
 
 def select_continent(flight_specs):
     query = f"SELECT DISTINCT continent FROM airport"
@@ -36,12 +64,13 @@ def select_continent(flight_specs):
     input_is_invalid = False
 
     while flight_specs["menu"] == 1:
-        os.system('cls')
+        os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + "[BACK] " + Fore.RESET + "Go back")
         for continent in continents:
             print(f"[{continent_codes[continents.index(continent)]}] {continent}")
         if input_is_invalid:
             print(Fore.RED + "Invalid continent" + Fore.RESET)
+
         selected_continent = input("Select continent: ").upper()
 
         if selected_continent in continent_codes:
@@ -55,7 +84,7 @@ def select_continent(flight_specs):
 
 
 def select_country(flight_specs, continent):
-    query = f"SELECT DISTINCT name, iso_country FROM country WHERE continent='{continent}'"
+    query = f"SELECT DISTINCT country.name, country.iso_country FROM airport INNER JOIN country ON country.iso_country = airport.iso_country WHERE country.continent='{continent}' AND type='large_airport';"
     cursor.execute(query)
     results = cursor.fetchall()
 
@@ -70,12 +99,12 @@ def select_country(flight_specs, continent):
     input_is_invalid = False
 
     while flight_specs["menu"] == 2:
-        os.system('cls')
+        os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + "[BACK] " + Fore.RESET + "Go back")
         for country in countries:
             print(f"[{country}] {countries[country]}")
         if input_is_invalid:
-            print(Fore.RED + "Invalid country" +  Fore.RESET)
+            print(Fore.RED + "Invalid country" + Fore.RESET)
 
         selected_country = input("Select country: ").upper()
 
@@ -90,7 +119,7 @@ def select_country(flight_specs, continent):
 
 
 def select_airport(flight_specs, country):
-    query = f"SELECT name, ident FROM airport WHERE iso_country='{country}'"
+    query = f"SELECT name, ident FROM airport WHERE iso_country='{country}' AND (type='medium_airport' OR type='large_airport')"
     cursor.execute(query)
     results = cursor.fetchall()
     airports = [row[0] for row in results]
@@ -99,7 +128,7 @@ def select_airport(flight_specs, country):
     input_is_invalid = False
     airport_already_selected = False
     while flight_specs["menu"] == 3:
-        os.system('cls')
+        os.system('cls' if os.name == 'nt' else 'clear')
         print(Fore.RED + "[BACK] " + Fore.RESET + "Go back")
         for airport in airports:
             print(f"[{airport_idents[airports.index(airport)]}] [{airport}]")
@@ -128,73 +157,61 @@ def choose_airport(flight_specs):
     flight_specs["menu"] = 1
     while flight_specs:
         if flight_specs["menu"] == 0:
-            os.system('cls')
-            return flight_specs # Go back to select flight menu
+            os.system('cls' if os.name == 'nt' else 'clear')
+            return flight_specs, None  # Go back to select flight menu
         elif flight_specs["menu"] == 1:
-            flight_specs, continent= select_continent(flight_specs)
+            flight_specs, continent = select_continent(flight_specs)
         elif flight_specs["menu"] == 2:
             flight_specs, country = select_country(flight_specs, continent)
         elif flight_specs["menu"] == 3:
             flight_specs, airport = select_airport(flight_specs, country)
             if airport is not None:
-                os.system('cls')
+                os.system('cls' if os.name == 'nt' else 'clear')
                 return flight_specs, airport
 
 
 def choose_flight(flight_specs):
-    os.system('cls')
+    os.system('cls' if os.name == 'nt' else 'clear')
     while flight_specs["menu"] == 0:
         print(Fore.RED + "[BACK] " + Fore.RESET + "Go back")
         if "departure_airport_name" in flight_specs:
-            print(f"[1] Departure airport: {flight_specs['departure_airport_name']}")
+            print(Fore.GREEN + "[1] " + Fore.RESET + "Departure airport: " + flight_specs['departure_airport_name'])
         else:
-            print("[1] Departure airport:")
+            print(Fore.GREEN + "[1] " + Fore.RESET + "Departure airport:")
 
         if "destination_airport_name" in flight_specs:
-            print(f"[2] Destination airport: {flight_specs['destination_airport_name']}")
+            print(Fore.GREEN + "[2] " + Fore.RESET + "Destination airport: " + flight_specs['destination_airport_name'])
         else:
-            print("[2] Destination airport:")
+            print(Fore.GREEN + "[2] " + Fore.RESET + "Destination airport:")
 
         selected_airport = input("Select: ").upper()
 
         if selected_airport == "1":
             flight_specs, ident = choose_airport(flight_specs)
-            flight_specs["departure_airport_ident"] = ident
-            flight_specs["departure_airport_name"] = get_airport_name(flight_specs["departure_airport_ident"])
+            if ident:
+                flight_specs["departure_airport_ident"] = ident
+                flight_specs["departure_airport_name"] = get_airport_name(flight_specs["departure_airport_ident"])
+                if "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs:
+                    flight_specs["distance_km"] = get_distance(flight_specs["departure_airport_ident"],flight_specs["destination_airport_ident"])
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    flight_specs["menu"] = 0
+                    return flight_specs
         elif selected_airport == "2":
-            flight_specs, ident= choose_airport(flight_specs)
-            flight_specs["destination_airport_ident"] = ident
-            flight_specs["destination_airport_name"] = get_airport_name(flight_specs["destination_airport_ident"])
+            flight_specs, ident = choose_airport(flight_specs)
+            if ident:
+                flight_specs["destination_airport_ident"] = ident
+                flight_specs["destination_airport_name"] = get_airport_name(flight_specs["destination_airport_ident"])
+                if "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs:
+                    if "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs:
+                        flight_specs["distance_km"] = get_distance(flight_specs["departure_airport_ident"], flight_specs["destination_airport_ident"])
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        flight_specs["menu"] = 0
+                        return flight_specs
         elif selected_airport == return_code:
             if "departure_airport_name" in flight_specs and "destination_airport_name" in flight_specs:
-                flight_specs["distance_km"] = get_distance(flight_specs["departure_airport_ident"], flight_specs["destination_airport_ident"])
-            return flight_specs
+                flight_specs["distance_km"] = get_distance(flight_specs["departure_airport_ident"],flight_specs["destination_airport_ident"])
+                os.system('cls' if os.name == 'nt' else 'clear')
+                flight_specs["menu"] = 0
+                return flight_specs
         else:
             input_is_valid = False
-
-
-
-def get_airport_name(airport_ident):
-    query = f"SELECT name FROM airport WHERE ident='{airport_ident}'"
-    cursor.execute(query)
-    results = []
-    for i in cursor.fetchall():
-        results.extend(i)
-    return results[0]
-
-
-def get_coords(airport_ident):
-    sql = f"SELECT latitude_deg, longitude_deg FROM airport where ident='{airport_ident}'"
-
-    cursor.execute(sql)
-    coords = cursor.fetchone()
-
-    return coords
-
-
-def get_distance(departure_airport_ident, destination_airport_ident):
-    coords1 = get_coords(departure_airport_ident)
-    coords2 = get_coords(destination_airport_ident)
-
-    distance_km = round(geopy.distance.geodesic(coords1, coords2).km)
-    return distance_km

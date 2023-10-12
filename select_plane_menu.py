@@ -8,6 +8,7 @@ def choose_plane(flight_specs):
     user_plane = False
     planes = plane_options()
     show_full_plane_status = False
+    os.system('cls' if os.name == 'nt' else 'clear')
     while not user_plane:
         print("Choose plane model:")
         print(Fore.RED + '[back]' + Fore.RESET, ' Go back to main menu')
@@ -19,7 +20,7 @@ def choose_plane(flight_specs):
             print(Fore.GREEN + '[' + str(i+1) + ']', Fore.RESET + plane.model)
             if show_full_plane_status:
                 print("  Nickname:", plane.name, "\n  Weight:",
-                      f'{plane.weight}kg', "\n  Flight speed:", f'{plane.flight_speed}km/h', "\n  Hp:", plane.hp)
+                      f'{plane.weight}kg', "\n  Flight speed:", f'{plane.speed}km/h', "\n  Hp:", plane.hp)
         chosen_plane_index = input("Type option: ")
         try:
             chosen_plane_index = int(chosen_plane_index)
@@ -34,6 +35,7 @@ def choose_plane(flight_specs):
                 return flight_specs
             else:
                 print("Invalid option")
-    os.system('cls')
+                os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
     flight_specs["user_plane"] = user_plane
     return flight_specs

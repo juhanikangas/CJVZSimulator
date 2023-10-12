@@ -53,4 +53,4 @@ def print_smoothly(name):
 def start_screen():
     print_smoothly(name)
     time.sleep(3)
-    os.system('cls')
+    os.system('cls' if os.name == 'nt' else 'clear')
