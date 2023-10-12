@@ -46,6 +46,7 @@ def flight(flight_specs):
     flight_time = flight_specs["flight_duration"] / frame_delay
     health = flight_specs["user_plane"].hp
     default_health = health
+    player = "✈️"
 
     frame_duration = 0
     player_alive = True
@@ -347,7 +348,7 @@ def flight(flight_specs):
 
                 # If entity spawning is enabled and the current frame is a multiple of 4:
                 if not stop_entity_spawn:
-                    if frame % 4 == 0:
+                    if frame % 3 == 0:
                         # List of all possible entities to spawn.
                         all_entities = [birds, ufo, thunder_cloud, helicopter, meteor, satellite, hot_air_balloon]
 
@@ -371,8 +372,8 @@ def flight(flight_specs):
 
             # Draw the grid, update the display, and show the player’s coordinates and frame count.
             draw_grid()
-            sys.stdout.write(f"X: {x} Y: {y} \n")
-            sys.stdout.write(f"Frame: {frame} \n")
+            # sys.stdout.write(f"X: {x} Y: {y} \n")
+            # sys.stdout.write(f"Frame: {frame} \n")
             sys.stdout.flush()
 
             # Pause the game for a specified delay and increment the frame count.
