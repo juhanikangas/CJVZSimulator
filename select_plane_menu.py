@@ -1,36 +1,57 @@
 from planes import plane_options
 from colorama import Fore, Back, Style
+import os
 
 
 # Shows the options for planes and asks what plane the user wants to use
-def choose_plane():
-    user_plane = False
+def choose_plane(flight_specs):
+    input_is_invalid = False
+    not_enough_exp = False
     planes = plane_options()
     show_full_plane_status = False
-    while not user_plane:
+    os.system('cls' if os.name == 'nt' else 'clear')
+    while flight_specs:
         print("Choose plane model:")
-        print(Fore.RED + '[back]' + Fore.RESET, ' Go back to main menu')
+        print(Fore.RED + '[BACK]' + Fore.RESET, ' Go back to main menu')
         if show_full_plane_status:
-            print(Fore.YELLOW + '[info]' + Fore.RESET, 'Close plane info')
+            print(Fore.YELLOW + '[INFO]' + Fore.RESET, 'Close plane info')
         else:
-            print(Fore.YELLOW + '[info]' + Fore.RESET + ' Open plane info')
+            print(Fore.YELLOW + '[INFO]' + Fore.RESET + ' Open plane info')
+        print(f"Your exp: {flight_specs['player_exp']}")
         for i, plane in enumerate(planes):
-            print(Fore.GREEN + '[' + str(i+1) + ']', Fore.RESET + plane.model)
+            if plane.exp <= flight_specs["player_exp"]:
+                print(Fore.GREEN + '[' + str(i + 1) + ']', Fore.RESET + plane.model)
+            else:
+                print(Fore.RED + '[' + str(i + 1) + ']', Fore.RESET + plane.model)
             if show_full_plane_status:
-                print("  Nickname:", plane.name, "\n  Weight:",
-                      f'{plane.weight}kg', "\n  Flight speed:", f'{plane.flight_speed}km/h', "\n  Hp:", plane.hp)
-        chosen_plane_index = input("Type option: ")
+                print(f'  Nickname: {plane.name} \n  Weight:  {plane.weight}kg \n  Flight speed: {plane.speed}km/h \n  HP: {plane.hp}, \n  Exp required: {plane.exp}')
+        if input_is_invalid:
+            print(Fore.RED + "Invalid input" + Fore.RESET)
+        if not_enough_exp:
+            print(Fore.RED + "Not enough exp" + Fore.RESET)
+        chosen_plane_index = input("Select: ").upper()
         try:
             chosen_plane_index = int(chosen_plane_index)
-            if chosen_plane_index > len(planes) or chosen_plane_index < 1:
-                print("Invalid option.")
+            if chosen_plane_index > len(planes)-1 or chosen_plane_index < 1:
+                input_is_invalid = True
+                not_enough_exp = False
+            elif flight_specs["player_exp"] < planes[chosen_plane_index - 1].exp:
+                not_enough_exp = True
+                input_is_invalid = False
+                os.system('cls' if os.name == 'nt' else 'clear')
             else:
-                user_plane = planes[chosen_plane_index - 1]
+                flight_specs["user_plane"] = planes[chosen_plane_index - 1]
+                os.system('cls' if os.name == 'nt' else 'clear')
+                return flight_specs
         except ValueError:
-            if chosen_plane_index == "info":
+            if chosen_plane_index == "INFO":
+                not_enough_exp = False
+                input_is_invalid = False
                 show_full_plane_status = not show_full_plane_status
-            elif chosen_plane_index == 'back':
-                return False
+            elif chosen_plane_index == 'BACK':
+                os.system('cls' if os.name == 'nt' else 'clear')
+                return flight_specs
             else:
-                print("Invalid option")
-    return user_plane
+                input_is_invalid = True
+                not_enough_exp = False
+                os.system('cls' if os.name == 'nt' else 'clear')
