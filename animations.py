@@ -117,7 +117,6 @@ def flight(flight_specs):
     ufo = {"e": [Entity("🛸", 0, 0)], "damage": 100}
     helicopter = {"e": [Entity("🚁", 0, 0)], "damage": 50}
     meteor = {"e": [Entity("☄️", 0, 0)], "damage": 150}
-    satellite = {"e": [Entity("🛰️", 0, 0)], "damage": 10}
     hot_air_balloon = {"e": [Entity("🎈", 0, 0)], "damage": 5}
 
     # rainbow = {"e": [Entity("🌈", 0, 0)], "shield": True}
@@ -350,7 +349,7 @@ def flight(flight_specs):
                 if not stop_entity_spawn:
                     if frame % 3 == 0:
                         # List of all possible entities to spawn.
-                        all_entities = [birds, ufo, thunder_cloud, helicopter, meteor, satellite, hot_air_balloon]
+                        all_entities = [birds, ufo, thunder_cloud, helicopter, meteor, hot_air_balloon]
 
                         # Spawn a random enemy entity at a random position.
                         spawn_enemy(random.choice(all_entities),
