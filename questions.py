@@ -2,7 +2,7 @@ import random
 import time
 from select_menu import select_menu
 
-questions = [
+questions_list = [
     {"question": "Is the Boeing 747 often referred to as the 'Queen of the Skies'?", "answers": ["Yes", "No"], "difficulty": "1"},
     {"question": "Does the Concorde hold the record for the fastest commercial airliner?", "answers": ["Yes", "No"], "difficulty": "1"},
     {"question": "Was the Lockheed SR-71 'Blackbird' primarily used for cargo transport purposes?", "answers": ["No", "Yes"], "difficulty": "1"},
@@ -15,7 +15,7 @@ questions = [
     {"question": "In aviation, what does 'FAA' stand for?", "answers": ["Federal Aviation Administration", "Frequent Airline Adjustments", "Flying Advancement Association"], "difficulty": "2"},
     {"question": "Which U.S. airline's slogan is 'The Friendly Skies'?", "answers": ["United Airlines", "American Airlines", "Delta Airlines"], "difficulty": "2"},
     {"question": "What is the world's longest commercial non-stop flight route?", "answers": ["Singapore to New York", "London to Perth", "Auckland to Dubai"], "difficulty": "2"},
-    {"question": "Which airport has the IATA code 'LHR,'", "answers": ["London Heathrow", "Lhasa Internation Airport", "Loch Ness Highlands Regional Airport", "Lahore Internation Airport"], "difficulty": "3"},
+    {"question": "Which airport has the IATA code 'LHR,'", "answers": ["London Heathrow Airport", "Lhasa Internation Airport", "Loch Ness Highlands Regional Airport", "Lahore Internation Airport"], "difficulty": "3"},
     {"question": "Do all airports have customs and immigration facilities for international flights?", "answers": ["No", "Yes"], "difficulty": "1"},
     {"question": "Are airplanes allowed to fly directly over the North Pole region on their routes?", "answers": ["Yes", "No"], "difficulty": "1"},
     {"question": "Is it possible for passengers to open the emergency exit doors of an airplane during flight?", "answers": ["No", "Yes"], "difficulty": "1"},
@@ -26,7 +26,7 @@ questions = [
 ]
 
 def question(question_index):
-    question = questions[question_index]
+    question = questions_list[question_index]
     answers = question["answers"].copy()
     correct_answer = answers[0]
     if "Yes" in answers:  # If the questions is not yes/no shuffle the answers
@@ -35,23 +35,29 @@ def question(question_index):
         random.shuffle(answers)
     user_answer = select_menu(answers, question["question"])
 
+    score = int(question["difficulty"]) * 50
     if user_answer == correct_answer:
-        return True
+        print(f"\nCorrect answer, you got {score} exp!")
+        time.sleep(3)
+        return score
     else:
-        return False
+        print("\nWrong answer!")
+        time.sleep(3)
+        return 0
 
 
-def main():
-    question_numbers = [i for i in range(5)]
-    points = 0
+def questions():
+    random_index = random.randint(0, len(questions_list) - 1)
+    score = question(random_index)
+    return score
+
+    '''
+    question_numbers = [i for i in range(19)]
     while question_numbers:
         random_index = random.randint(0, len(question_numbers) - 1)
         answer_correct = question(question_numbers[random_index])
         question_numbers.pop(random_index)
-        if answer_correct:
-            points += 1
-    print(points)
-    time.sleep(5)
+    random_index = random.randint(0, len(question_numbers) - 1)
+    '''
 
 
-main()

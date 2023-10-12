@@ -70,8 +70,10 @@ def main_menu(flight_specs):
         selected_option = input("Select: ")
 
         if selected_option == "1":
+            input_is_invalid = False
             flight_specs = choose_plane(flight_specs)
         elif selected_option == "2":
+            input_is_invalid = False
             flight_specs = choose_flight(flight_specs)
         elif selected_option == "3" and plane_and_flight_selected:
             if plane_and_flight_selected:

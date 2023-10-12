@@ -1,15 +1,15 @@
 class Plane:
-    def __init__(self, model, name, weight, flight_speed, hp, exp):
+    def __init__(self, model, name, weight, speed, hp, exp):
         self.model = model
         self.name = name
         self.weight = weight
-        self.flight_speed = flight_speed
+        self.speed = speed
         self.hp = hp
         self.exp = exp
 
     def str(self):
         return (f"{{'model': '{self.model}', 'name': '{self.name}',"
-                f" weight': '{self.weight}', 'max_speed': '{self.flight_speed}',"
+                f" weight': '{self.weight}', 'max_speed': '{self.speed}',"
                 f" 'hp': '{self.hp}'}}")
 
 
