@@ -17,7 +17,10 @@ def choose_plane(flight_specs):
         else:
             print(Fore.YELLOW + '[info]' + Fore.RESET + ' Open plane info')
         for i, plane in enumerate(planes):
-            print(Fore.GREEN + '[' + str(i+1) + ']', Fore.RESET + plane.model)
+            if plane.exp <= flight_specs["player_exp"]:
+                print(Fore.GREEN + '[' + str(i + 1) + ']', Fore.RESET + plane.model)
+            else:
+                print(Fore.RED + '[' + str(i + 1) + ']', Fore.RESET + plane.model)
             if show_full_plane_status:
                 print("  Nickname:", plane.name, "\n  Weight:",
                       f'{plane.weight}kg', "\n  Flight speed:", f'{plane.speed}km/h', "\n  Hp:", plane.hp)
@@ -26,8 +29,13 @@ def choose_plane(flight_specs):
             chosen_plane_index = int(chosen_plane_index)
             if chosen_plane_index > len(planes) or chosen_plane_index < 1:
                 print("Invalid option.")
+            elif flight_specs["player_exp"] < planes[chosen_plane_index - 1].exp:
+                print("exp:", flight_specs["player_exp"])
+                print("index:", chosen_plane_index)
+                print("plane exp: ", planes[chosen_plane_index].exp)
+                print("Not enough exp")
             else:
-                user_plane = planes[chosen_plane_index - 1]
+                flight_specs["user_plane"] = planes[chosen_plane_index - 1]
         except ValueError:
             if chosen_plane_index == "info":
                 show_full_plane_status = not show_full_plane_status
@@ -37,5 +45,4 @@ def choose_plane(flight_specs):
                 print("Invalid option")
                 os.system('cls' if os.name == 'nt' else 'clear')
     os.system('cls' if os.name == 'nt' else 'clear')
-    flight_specs["user_plane"] = user_plane
     return flight_specs
