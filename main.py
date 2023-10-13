@@ -11,7 +11,7 @@ flight_specs = {
 
 def main():
     global flight_specs
-    # start_screen()
+    start_screen()
 
     while flight_specs:
         flight_specs = main_menu(flight_specs)

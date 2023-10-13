@@ -1,7 +1,8 @@
-from planes import plane_options
-from colorama import Fore, Back, Style
 import os
 
+from colorama import Fore, Back, Style
+
+from planes import plane_options
 
 # Shows the options for planes and asks what plane the user wants to use
 def choose_plane(flight_specs):
