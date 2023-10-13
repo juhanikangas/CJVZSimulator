@@ -1,18 +1,15 @@
 import os
-import time
 
 import mysql.connector as mc
 import geopy.distance
 from colorama import Fore
 
-from select_menu import select_menu
-
 connection = mc.connect(
     host='127.0.0.1',
     port=3306,
     database='flight_game',
-    user='luukas',
-    password='s87lk#4Mi1a',
+    user='user',
+    password='password',
     autocommit=True
 )
 cursor = connection.cursor()

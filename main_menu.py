@@ -4,7 +4,6 @@ from colorama import Fore
 
 from select_plane_menu import choose_plane
 from select_flight_menu import choose_flight
-from select_menu import select_menu
 from planes import plane_options
 
 def calculate_flight_duration(flight_specs):
@@ -82,5 +81,3 @@ def main_menu(flight_specs):
         else:
             os.system('cls' if os.name == 'nt' else 'clear')
             input_is_invalid = True
-
-
